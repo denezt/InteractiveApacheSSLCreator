@@ -10,9 +10,9 @@ __ssl_certs='/etc/apache2/ssl'
 
 enable_mod(){
 	# Enable SSL Module.
-	a2enmod ssl
+	sudo a2enmod ssl
 	# Now restart Apache Services.
-	service apache2 restart
+	sudo service apache2 restart
 	}
 
 create_dir(){
@@ -27,13 +27,13 @@ create_certs(){
 	_found="$(whereis openssl | wc -c)"
 	case ${_found} in
 		0) printf "\033[32mInstalling,\033[0m \033[35mOpenSSL\033[0m\n"
-		yes | apt-get install openssl
+		yes | sudo apt-get install openssl
 		;;
 		*) printf "\033[32mFound,\033[0m \033[35mOpenSSL\033[0m\n"
 		;;
 	esac
 	# Create a 1 Year cert
-	openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt
 	}
 
 edit_default_conf(){
@@ -48,23 +48,23 @@ edit_default_conf(){
 			y|Y|yes|Yes)
 			if [ ! -d "backups" ];
 			then
-				mkdir -v "backups"
+				sudo mkdir -v "backups"
 			else
 				printf "\033[35mFound local archive directory.\033[0m\n"
 			fi
 			# Archive old config with timestamp.
-			cp -a -v "${__apache_ssl_conf}" backups/default-ssl.config.archive-$(date '+%s')
+			sudo cp -a -v "${__apache_ssl_conf}" backups/default-ssl.config.archive-$(date '+%s')
 			;;
 		esac
-		echo "${__base64_conf}" | base64 --decode | tee "${__apache_ssl_conf}"
+		echo "${__base64_conf}" | sudo base64 --decode | tee "${__apache_ssl_conf}"
 	else
 		printf "\033[35mError:\033[0m \033[31mMissing configuration file!\033[0m\n"
 	fi
 	}
 
 enable_default_conf(){
-	a2ensite default-ssl.conf
-	service apache2 restart
+	sudo a2ensite default-ssl.conf
+	sudo service apache2 restart
 	}
 
 case $option in
